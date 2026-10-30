@@ -93,13 +93,21 @@
   const sim = document.getElementById('sim');
   const msg = document.getElementById('msg');
 
+  let ultimaFuga = 0;
+
   function foge() {
+    ultimaFuga = Date.now();
     const s = stage.getBoundingClientRect();
     const b = nao.getBoundingClientRect();
     if (!nao.classList.contains('solto')) {
       // fixa a posição atual antes de soltar, para a primeira fuga animar
       nao.style.left = (b.left - s.left) + 'px';
       nao.style.top = (b.top - s.top) + 'px';
+      // deixa um espaço vazio no lugar, senão o "Sim" escorrega para baixo do dedo
+      const vaga = document.createElement('span');
+      vaga.style.width = b.width + 'px';
+      vaga.style.height = b.height + 'px';
+      nao.before(vaga);
       nao.classList.add('solto');
       nao.offsetWidth;
     }
@@ -130,6 +138,8 @@
   nao.addEventListener('click', e => { e.preventDefault(); foge(); });
 
   sim.addEventListener('click', () => {
+    // toque que era no "Não" não conta como "Sim"
+    if (Date.now() - ultimaFuga < 600) return;
     msg.hidden = false;
     document.getElementById('ok').focus();
     for (let i = 0; i < 18; i++) {
