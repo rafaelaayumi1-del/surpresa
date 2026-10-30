@@ -46,7 +46,7 @@
   button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
   #sim { font-size: 22px; padding: 12px 34px; }
   #nao { font-size: 13px; padding: 6px 14px; }
-  #nao.solto { position: absolute; transition: left .12s ease-out, top .12s ease-out; }
+  #nao.solto { position: absolute; }
   #msg {
     position: absolute; inset: 0; display: grid; place-items: center;
     background: rgb(89 13 34 / .35);
@@ -62,7 +62,6 @@
   .coracao { position: absolute; pointer-events: none; font-size: 26px; animation: sobe 2.4s ease-out forwards; }
   @keyframes sobe { from { transform: translateY(0); opacity: 1 } to { transform: translateY(-60vh); opacity: 0 } }
   @media (prefers-reduced-motion: reduce) {
-    #nao.solto { transition: none; }
     .coracao { display: none; }
   }
 </style>
@@ -109,11 +108,10 @@
       vaga.style.height = b.height + 'px';
       nao.before(vaga);
       nao.classList.add('solto');
-      nao.offsetWidth;
     }
     // sorteia até cair longe do "Sim", do título e de onde ele estava
     const longe = [sim, document.querySelector('h1'), nao].map(el => {
-      const r = el.getBoundingClientRect(), m = 24;
+      const r = el.getBoundingClientRect(), m = 40;
       return { l: r.left - s.left - m, t: r.top - s.top - m, r: r.right - s.left + m, b: r.bottom - s.top + m };
     });
     let x, y;
