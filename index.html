@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quer namorar comigo?</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap">
+<style>
+  /* Tela única rosa, como o app original em tkinter — um só tema, de propósito */
+  :root {
+    --bg: #ffc8dd;
+    --ink: #590d22;
+    --btn: #ffb3c1;
+    --btn-edge: #c9184a;
+    --card: #fff0f3;
+    --font: "Montserrat", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    overflow: hidden;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    -webkit-user-select: none; user-select: none;
+    touch-action: manipulation;
+  }
+  #stage { position: relative; height: 100%; }
+  .center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 22vh; gap: 20px;
+  }
+  h1 {
+    margin: 0; font-weight: 800; text-align: center; text-wrap: balance;
+    font-size: clamp(28px, 7vw, 44px); line-height: 1.15;
+  }
+  .row { display: flex; gap: 16px; align-items: center; }
+  button {
+    font-family: var(--font); font-weight: 800; color: var(--ink);
+    background: var(--btn); border: 3px ridge var(--btn-edge);
+    border-radius: 6px; cursor: pointer;
+  }
+  button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  #sim { font-size: 22px; padding: 12px 34px; }
+  #nao { font-size: 13px; padding: 6px 14px; }
+  #nao.solto { position: absolute; transition: left .12s ease-out, top .12s ease-out; }
+  #msg {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    background: rgb(89 13 34 / .35);
+  }
+  #msg .card {
+    background: var(--card); border: 3px ridge var(--btn-edge); border-radius: 10px;
+    padding: 24px 22px; max-width: 320px; text-align: center;
+    display: grid; gap: 16px; margin: 0 16px;
+  }
+  #msg h2 { margin: 0; font-size: 22px; }
+  #msg p { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.4; }
+  #msg button { font-size: 16px; padding: 8px 24px; justify-self: center; }
+  .coracao { position: absolute; pointer-events: none; font-size: 26px; animation: sobe 2.4s ease-out forwards; }
+  @keyframes sobe { from { transform: translateY(0); opacity: 1 } to { transform: translateY(-60vh); opacity: 0 } }
+  @media (prefers-reduced-motion: reduce) {
+    #nao.solto { transition: none; }
+    .coracao { display: none; }
+  }
+</style>
+<style>body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<div id="stage">
+  <div class="center">
+    <h1>Quer namorar comigo?</h1>
+    <div class="row">
+      <button id="nao" type="button">Não</button>
+      <button id="sim" type="button">Sim</button>
+    </div>
+  </div>
+  <div id="msg" hidden>
+    <div class="card">
+      <h2>Meu amor</h2>
+      <p>Eu te amo meu amor, lanchinho mais tarde?</p>
+      <button id="ok" type="button">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const nao = document.getElementById('nao');
+  const sim = document.getElementById('sim');
+  const msg = document.getElementById('msg');
+
+  function foge() {
+    const s = stage.getBoundingClientRect();
+    const b = nao.getBoundingClientRect();
+    if (!nao.classList.contains('solto')) {
+      // fixa a posição atual antes de soltar, para a primeira fuga animar
+      nao.style.left = (b.left - s.left) + 'px';
+      nao.style.top = (b.top - s.top) + 'px';
+      nao.classList.add('solto');
+      nao.offsetWidth;
+    }
+    const x = Math.random() * Math.max(0, s.width - b.width);
+    const y = Math.random() * Math.max(0, s.height - b.height);
+    nao.style.left = x + 'px';
+    nao.style.top = y + 'px';
+  }
+
+  // No computador: foge quando o mouse chega perto
+  stage.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    const b = nao.getBoundingClientRect();
+    const cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+    if (Math.abs(e.clientX - cx) < 60 && Math.abs(e.clientY - cy) < 45) foge();
+  });
+  // No celular: foge assim que o dedo encosta
+  nao.addEventListener('pointerdown', e => { e.preventDefault(); foge(); });
+  nao.addEventListener('click', e => { e.preventDefault(); foge(); });
+
+  sim.addEventListener('click', () => {
+    msg.hidden = false;
+    document.getElementById('ok').focus();
+    for (let i = 0; i < 18; i++) {
+      const c = document.createElement('span');
+      c.className = 'coracao';
+      c.textContent = '♥';
+      c.style.left = Math.random() * 95 + '%';
+      c.style.top = 80 + Math.random() * 20 + '%';
+      c.style.color = ['#c9184a', '#ff4d6d', '#590d22'][i % 3];
+      c.style.animationDelay = Math.random() * .8 + 's';
+      stage.appendChild(c);
+      setTimeout(() => c.remove(), 3400);
+    }
+  });
+  document.getElementById('ok').addEventListener('click', () => { msg.hidden = true; });
+</script>
+</body>
+</html>
