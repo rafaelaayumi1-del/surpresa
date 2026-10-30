@@ -103,8 +103,17 @@
       nao.classList.add('solto');
       nao.offsetWidth;
     }
-    const x = Math.random() * Math.max(0, s.width - b.width);
-    const y = Math.random() * Math.max(0, s.height - b.height);
+    // sorteia até cair longe do "Sim", do título e de onde ele estava
+    const longe = [sim, document.querySelector('h1'), nao].map(el => {
+      const r = el.getBoundingClientRect(), m = 24;
+      return { l: r.left - s.left - m, t: r.top - s.top - m, r: r.right - s.left + m, b: r.bottom - s.top + m };
+    });
+    let x, y;
+    for (let i = 0; i < 50; i++) {
+      x = Math.random() * Math.max(0, s.width - b.width);
+      y = Math.random() * Math.max(0, s.height - b.height);
+      if (!longe.some(z => x < z.r && x + b.width > z.l && y < z.b && y + b.height > z.t)) break;
+    }
     nao.style.left = x + 'px';
     nao.style.top = y + 'px';
   }
